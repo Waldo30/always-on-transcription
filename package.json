@@ -2,26 +2,53 @@
   "name": "always-on-transcription",
   "version": "0.1.0",
   "private": true,
+  "main": "electron-dist/main.js",
+  "homepage": "./",
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "export": "next build && next export",
+    "electron:compile": "tsc --project tsconfig.electron.json",
+    "electron:dev": "npm run electron:compile && concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:build": "npm run export && npm run electron:compile && electron-builder"
   },
   "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.544.0",
+    "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.3"
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "concurrently": "^9.2.1",
+    "electron": "^38.1.1",
+    "electron-builder": "^26.0.12",
+    "electron-is-dev": "^3.0.1",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "tw-animate-css": "^1.3.8",
+    "typescript": "^5",
+    "wait-on": "^9.0.0"
+  },
+  "build": {
+    "appId": "com.example.always-on-transcription",
+    "productName": "Always On Transcription",
+    "files": [
+      "out/**/*",
+      "electron-dist/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    }
   }
 }
