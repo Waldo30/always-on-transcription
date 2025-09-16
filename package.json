@@ -10,11 +10,12 @@
     "start": "next start",
     "lint": "next lint",
     "export": "next build && next export",
-    "electron:compile": "tsc --project tsconfig.electron.json",
+    "electron:compile": "tsc --project tsconfig.electron.json && copy electron\\preload.js electron-dist\\preload.js",
     "electron:dev": "npm run electron:compile && concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
     "electron:build": "npm run export && npm run electron:compile && electron-builder"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",

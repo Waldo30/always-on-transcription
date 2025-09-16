@@ -9,6 +9,6 @@
     "outDir": "./electron-dist"
   },
   "include": [
-    "electron"
+    "electron/**/*"
   ]
 }
