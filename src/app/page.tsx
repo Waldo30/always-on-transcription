@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { SettingsPanel } from "@/components/settings-panel";
 import { TranscriptionList } from "@/components/transcription-list";
+import { LiveTranscription } from "@/components/live-transcription";
 
 // Mock data for demonstration
 const mockTranscriptions = [
@@ -65,20 +66,36 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-200">
+    <main className="min-h-screen bg-gray-200 flex flex-col">
       <AppHeader
         status={status}
         onSettingsClick={() => setIsSettingsOpen(true)}
       />
 
-      <div className="p-2">
-        <TranscriptionList
-          items={transcriptions}
-          onPin={handlePin}
-          onUnpin={handleUnpin}
-          onDelete={handleDelete}
-          onClearAll={handleClearAll}
+      <div className="p-2 flex-1 flex flex-col">
+        <LiveTranscription
+          onAddToHistory={(text) => {
+            const newTranscription = {
+              id: Date.now().toString(),
+              text: text,
+              timestamp: new Date(),
+              isPinned: false,
+              type: "audio" as const,
+            };
+            setTranscriptions((prev) => [newTranscription, ...prev]);
+          }}
         />
+
+        <div className="mb-2" />
+        <div className="flex-1 min-h-0">
+          <TranscriptionList
+            items={transcriptions}
+            onPin={handlePin}
+            onUnpin={handleUnpin}
+            onDelete={handleDelete}
+            onClearAll={handleClearAll}
+          />
+        </div>
       </div>
 
       <SettingsPanel

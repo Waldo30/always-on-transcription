@@ -38,10 +38,20 @@ export function TranscriptionList({
     );
   }
 
+  // Sort items: pinned items first (by creation time), then unpinned items (by creation time)
+  const sortedItems = [...items].sort((a, b) => {
+    // If both are pinned or both are unpinned, sort by timestamp (newest first)
+    if (a.isPinned === b.isPinned) {
+      return b.timestamp.getTime() - a.timestamp.getTime();
+    }
+    // Pinned items come first
+    return a.isPinned ? -1 : 1;
+  });
+
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 flex-shrink-0">
         <h2 className="text-sm font-semibold">Transcription History</h2>
         <div className="flex items-center gap-2">
           <Button
@@ -56,9 +66,9 @@ export function TranscriptionList({
       </div>
 
       {/* Scrollable List */}
-      <ScrollArea className="h-[400px]">
+      <ScrollArea className="flex-1 min-h-0">
         <div className="space-y-3 w-full">
-          {items.map((item) => (
+          {sortedItems.map((item) => (
             <TranscriptionItem
               key={item.id}
               id={item.id}
