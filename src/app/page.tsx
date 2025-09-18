@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { SettingsPanel } from "@/components/settings-panel";
 import { TranscriptionList } from "@/components/transcription-list";
-import { LiveTranscription } from "@/components/live-transcription";
+import { RecordButton } from "@/components/record-button";
 
 // Mock data for demonstration
 const mockTranscriptions = [
@@ -73,7 +73,7 @@ export default function Home() {
       />
 
       <div className="p-2 flex-1 flex flex-col">
-        <LiveTranscription
+        <RecordButton
           onAddToHistory={(text) => {
             const newTranscription = {
               id: Date.now().toString(),
@@ -102,7 +102,6 @@ export default function Home() {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
       />
-
     </main>
   );
 }
