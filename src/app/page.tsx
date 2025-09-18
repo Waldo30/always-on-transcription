@@ -1,35 +1,108 @@
-import { MicIcon, SettingsIcon } from "lucide-react";
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { AppHeader } from "@/components/app-header";
+import { SettingsPanel } from "@/components/settings-panel";
+import { TranscriptionList } from "@/components/transcription-list";
+import { LiveTranscription } from "@/components/live-transcription";
+
+// Mock data for demonstration
+const mockTranscriptions = [
+  {
+    id: "1",
+    text: "This is a sample transcription that demonstrates how the clipboard history will look. It shows a longer text that gets truncated with ellipsis.",
+    timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+    isPinned: false,
+    type: "audio" as const,
+  },
+  {
+    id: "2",
+    text: "Short transcription",
+    timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
+    isPinned: true,
+    type: "audio" as const,
+  },
+  {
+    id: "3",
+    text: "Another example of transcribed text that shows how the interface handles different lengths of content and various timestamps.",
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+    isPinned: false,
+    type: "audio" as const,
+  },
+];
 
 export default function Home() {
+  const [status] = useState<"idle" | "recording" | "processing">("idle");
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [lastTranscription] = useState("");
+  const [isCopied, setIsCopied] = useState(false);
+  const [transcriptions, setTranscriptions] = useState(mockTranscriptions);
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  const handlePin = (id: string) => {
+    setTranscriptions((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, isPinned: true } : item))
+    );
+  };
+
+  const handleUnpin = (id: string) => {
+    setTranscriptions((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, isPinned: false } : item))
+    );
+  };
+
+  const handleDelete = (id: string) => {
+    setTranscriptions((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleClearAll = () => {
+    setTranscriptions([]);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-background text-foreground">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-blue-300">
-          Always-On Transcription
-        </h1>
-        <p className="text-lg mt-2 text-muted-foreground">
-          Your personal speech-to-text assistant.
-        </p>
-      </div>
+    <main className="min-h-screen bg-gray-200 flex flex-col">
+      <AppHeader
+        status={status}
+        onSettingsClick={() => setIsSettingsOpen(true)}
+      />
 
-      <div className="mt-12 flex flex-col items-center gap-6">
-        <div className="p-6 bg-card rounded-full border shadow-sm">
-          <MicIcon className="h-12 w-12" />
+      <div className="p-2 flex-1 flex flex-col">
+        <LiveTranscription
+          onAddToHistory={(text) => {
+            const newTranscription = {
+              id: Date.now().toString(),
+              text: text,
+              timestamp: new Date(),
+              isPinned: false,
+              type: "audio" as const,
+            };
+            setTranscriptions((prev) => [newTranscription, ...prev]);
+          }}
+        />
+
+        <div className="mb-2" />
+        <div className="flex-1 min-h-0">
+          <TranscriptionList
+            items={transcriptions}
+            onPin={handlePin}
+            onUnpin={handleUnpin}
+            onDelete={handleDelete}
+            onClearAll={handleClearAll}
+          />
         </div>
-        <p className="text-center max-w-xs text-red-300">
-          Press your global hotkey to start transcribing. Click the button below
-          to configure your settings.
-        </p>
-        <Button variant="default">
-          <SettingsIcon className="mr-2 h-4" /> Configure Settings
-        </Button>
       </div>
 
-      <div className="absolute bottom-6 right-6">
-        <Badge variant="outline">Status: Idle</Badge>
-      </div>
+      <SettingsPanel
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
+
     </main>
   );
 }
