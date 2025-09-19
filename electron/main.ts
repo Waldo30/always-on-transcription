@@ -1,6 +1,8 @@
-const { app, BrowserWindow } = require("electron");
-const isDev = require("electron-is-dev");
-const path = require("path");
+import { app, BrowserWindow, globalShortcut } from "electron";
+import isDev from "electron-is-dev";
+import path from "path";
+
+let mainWindow: BrowserWindow | null;
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -9,7 +11,6 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      enableRemoteModule: false,
       preload: path.join(__dirname, "preload.js"),
     },
   });
@@ -19,9 +20,23 @@ function createWindow() {
     : `file://${path.join(__dirname, "../out/index.html")}`;
 
   win.loadURL(loadURL);
+  mainWindow = win;
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+
+  // Register global shortcut to toggle recording
+  const registered = globalShortcut.register("CommandOrControl+Shift+R", () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send("toggle-recording");
+    }
+  });
+
+  if (!registered) {
+    console.error("Global shortcut registration failed");
+  }
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
@@ -33,4 +48,8 @@ app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
+});
+
+app.on("will-quit", () => {
+  globalShortcut.unregisterAll();
 });

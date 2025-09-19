@@ -20,6 +20,8 @@ export function RecordButton({ onAddToHistory }: RecordButtonProps) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
+  const isRecordingRef = useRef<boolean>(false);
+  const isProcessingRef = useRef<boolean>(false);
 
   const startRecording = async () => {
     try {
@@ -61,6 +63,7 @@ export function RecordButton({ onAddToHistory }: RecordButtonProps) {
 
       mediaRecorder.start();
       setIsRecording(true);
+      isRecordingRef.current = true;
     } catch (err) {
       console.error("Error starting recording:", err);
     }
@@ -73,7 +76,9 @@ export function RecordButton({ onAddToHistory }: RecordButtonProps) {
     ) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+      isRecordingRef.current = false;
       setIsProcessing(true);
+      isProcessingRef.current = true;
     }
   };
 
@@ -101,6 +106,7 @@ export function RecordButton({ onAddToHistory }: RecordButtonProps) {
       console.error("Transcription error:", err);
     } finally {
       setIsProcessing(false);
+      isProcessingRef.current = false;
     }
   };
 
@@ -114,6 +120,18 @@ export function RecordButton({ onAddToHistory }: RecordButtonProps) {
   };
 
   useEffect(() => {
+    // Listen for Electron global shortcut toggle with fresh state via refs
+    const api: any = (globalThis as any).electronAPI;
+    if (api && typeof api.receive === "function") {
+      api.receive("toggle-recording", () => {
+        if (isProcessingRef.current) return;
+        if (isRecordingRef.current) {
+          stopRecording();
+        } else {
+          startRecording();
+        }
+      });
+    }
     return () => {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());

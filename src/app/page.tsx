@@ -38,7 +38,12 @@ export default function Home() {
   const [transcriptions, setTranscriptions] = useState(mockTranscriptions);
 
   const handleCopy = async (text: string) => {
+    const api: any = (globalThis as any).electronAPI;
     try {
+      if (api && typeof api.writeClipboard === "function") {
+        const ok = api.writeClipboard(text);
+        if (ok) return;
+      }
       await navigator.clipboard.writeText(text);
     } catch (error) {
       console.error("Clipboard copy failed:", error);

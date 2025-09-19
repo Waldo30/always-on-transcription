@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, clipboard } = require('electron');
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
@@ -17,7 +17,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   
   // Example: Receive message from main process
   receive: (channel, func) => {
-    let validChannels = ['transcription-result', 'settings-updated'];
+    let validChannels = ['transcription-result', 'settings-updated', 'toggle-recording'];
     if (validChannels.includes(channel)) {
       // Remove all listeners for this channel before adding new one
       ipcRenderer.removeAllListeners(channel);
@@ -30,6 +30,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
     let validChannels = ['get-app-version', 'save-settings'];
     if (validChannels.includes(channel)) {
       return ipcRenderer.invoke(channel, data);
+    }
+  },
+
+  // Native clipboard write that doesn't require user gesture/focus
+  writeClipboard: (text) => {
+    try {
+      clipboard.writeText(String(text ?? ''));
+      return true;
+    } catch (e) {
+      console.error('Native clipboard write failed', e);
+      return false;
     }
   }
 });

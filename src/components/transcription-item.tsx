@@ -40,7 +40,15 @@ export function TranscriptionItem({
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(text);
+      const api: any = (globalThis as any).electronAPI;
+      if (api && typeof api.writeClipboard === "function") {
+        const ok = api.writeClipboard(text);
+        if (!ok) {
+          await navigator.clipboard.writeText(text);
+        }
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch (error) {
