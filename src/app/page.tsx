@@ -1,32 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { SettingsPanel } from "@/components/settings-panel";
 import { TranscriptionList } from "@/components/transcription-list";
-import { LiveTranscription } from "@/components/live-transcription";
-
-// Mock data for demonstration
+import { RecordButton } from "@/components/record-button";
 const mockTranscriptions = [
   {
     id: "1",
     text: "This is a sample transcription that demonstrates how the clipboard history will look. It shows a longer text that gets truncated with ellipsis.",
-    timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+    timestamp: new Date(Date.now() - 5 * 60 * 1000),
     isPinned: false,
     type: "audio" as const,
   },
   {
     id: "2",
     text: "Short transcription",
-    timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
+    timestamp: new Date(Date.now() - 15 * 60 * 1000),
     isPinned: true,
     type: "audio" as const,
   },
   {
     id: "3",
     text: "Another example of transcribed text that shows how the interface handles different lengths of content and various timestamps.",
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
     isPinned: false,
     type: "audio" as const,
   },
@@ -35,14 +32,21 @@ const mockTranscriptions = [
 export default function Home() {
   const [status] = useState<"idle" | "recording" | "processing">("idle");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [lastTranscription] = useState("");
-  const [isCopied, setIsCopied] = useState(false);
+
   const [transcriptions, setTranscriptions] = useState(mockTranscriptions);
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 2000);
+  const handleCopy = async (text: string) => {
+    type ElectronAPI = { send?: (channel: string, data?: unknown) => void };
+    const api = (globalThis as { electronAPI?: ElectronAPI }).electronAPI;
+    try {
+      if (api && typeof api.send === "function") {
+        api.send("copy-to-clipboard", text);
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      console.error("Clipboard copy failed:", error);
+    }
   };
 
   const handlePin = (id: string) => {
@@ -73,7 +77,7 @@ export default function Home() {
       />
 
       <div className="p-2 flex-1 flex flex-col">
-        <LiveTranscription
+        <RecordButton
           onAddToHistory={(text) => {
             const newTranscription = {
               id: Date.now().toString(),
@@ -83,6 +87,7 @@ export default function Home() {
               type: "audio" as const,
             };
             setTranscriptions((prev) => [newTranscription, ...prev]);
+            handleCopy(text);
           }}
         />
 
@@ -102,7 +107,6 @@ export default function Home() {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
       />
-
     </main>
   );
 }

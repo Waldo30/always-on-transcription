@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { KeyboardIcon, Volume2Icon, MicIcon } from "lucide-react";
+import { KeyboardIcon, Volume2Icon } from "lucide-react";
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -24,7 +23,6 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
   const handleHotkeyChange = (type: "start" | "stop") => {
     setIsRecordingHotkey(true);
-    // In a real app, this would listen for actual key combinations
     setTimeout(() => {
       setIsRecordingHotkey(false);
       if (type === "start") {
@@ -46,7 +44,6 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Hotkey Settings */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <KeyboardIcon className="h-4 w-4" />
@@ -61,7 +58,6 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                   size="sm"
                   onClick={() => handleHotkeyChange("start")}
                   disabled={isRecordingHotkey}
-                  //   className="h-8"
                 >
                   {isRecordingHotkey ? "Press keys..." : startHotkey}
                 </Button>
@@ -74,7 +70,6 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                   size="sm"
                   onClick={() => handleHotkeyChange("stop")}
                   disabled={isRecordingHotkey}
-                  //   className="h-8"
                 >
                   {isRecordingHotkey ? "Press keys..." : stopHotkey}
                 </Button>
@@ -82,7 +77,6 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             </div>
           </div>
 
-          {/* Audio Settings */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Volume2Icon className="h-4 w-4" />
