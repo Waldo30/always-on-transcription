@@ -70,7 +70,6 @@ function createWindow() {
 }
 electron_1.app.whenReady().then(function () {
     createWindow();
-    // Register global shortcut to toggle recording
     var registered = electron_1.globalShortcut.register("CommandOrControl+Shift+R", function () {
         if (mainWindow && !mainWindow.isDestroyed()) {
             mainWindow.webContents.send("toggle-recording");
@@ -79,7 +78,6 @@ electron_1.app.whenReady().then(function () {
     if (!registered) {
         console.error("Global shortcut registration failed");
     }
-    // Show indicator on renderer start/stop events
     electron_1.ipcMain.on("start-transcription", function () {
         renderIndicator("recording");
     });
@@ -87,10 +85,8 @@ electron_1.app.whenReady().then(function () {
         renderIndicator("processing");
     });
     electron_1.ipcMain.on("stop-transcription", function () {
-        // Transition to processing immediately so there is no visual gap
         renderIndicator("processing");
     });
-    // Allow renderer to request a native clipboard write and confirm success
     electron_1.ipcMain.on("copy-to-clipboard", function (_evt, text) {
         try {
             electron_1.clipboard.writeText(String(text !== null && text !== void 0 ? text : ""));
@@ -106,9 +102,7 @@ electron_1.app.whenReady().then(function () {
                 }
             }, 1500);
         }
-        catch (_a) {
-            // ignore
-        }
+        catch (_a) { }
     });
 });
 electron_1.app.on("window-all-closed", function () {

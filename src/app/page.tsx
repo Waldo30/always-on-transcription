@@ -5,27 +5,25 @@ import { AppHeader } from "@/components/app-header";
 import { SettingsPanel } from "@/components/settings-panel";
 import { TranscriptionList } from "@/components/transcription-list";
 import { RecordButton } from "@/components/record-button";
-
-// Mock data for demonstration
 const mockTranscriptions = [
   {
     id: "1",
     text: "This is a sample transcription that demonstrates how the clipboard history will look. It shows a longer text that gets truncated with ellipsis.",
-    timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+    timestamp: new Date(Date.now() - 5 * 60 * 1000),
     isPinned: false,
     type: "audio" as const,
   },
   {
     id: "2",
     text: "Short transcription",
-    timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
+    timestamp: new Date(Date.now() - 15 * 60 * 1000),
     isPinned: true,
     type: "audio" as const,
   },
   {
     id: "3",
     text: "Another example of transcribed text that shows how the interface handles different lengths of content and various timestamps.",
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
     isPinned: false,
     type: "audio" as const,
   },
@@ -38,7 +36,8 @@ export default function Home() {
   const [transcriptions, setTranscriptions] = useState(mockTranscriptions);
 
   const handleCopy = async (text: string) => {
-    const api: any = (globalThis as any).electronAPI;
+    type ElectronAPI = { send?: (channel: string, data?: unknown) => void };
+    const api = (globalThis as { electronAPI?: ElectronAPI }).electronAPI;
     try {
       if (api && typeof api.send === "function") {
         api.send("copy-to-clipboard", text);

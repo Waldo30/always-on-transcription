@@ -40,8 +40,9 @@ export function TranscriptionItem({
 
   const handleCopy = async () => {
     try {
-      const api: any = (globalThis as any).electronAPI;
-      if (api && typeof api.send === "function") {
+      type ElectronAPI = { send?: (channel: string, data?: unknown) => void };
+      const api = (globalThis as { electronAPI?: ElectronAPI }).electronAPI;
+      if (api?.send) {
         api.send("copy-to-clipboard", text);
       } else {
         await navigator.clipboard.writeText(text);
@@ -62,7 +63,6 @@ export function TranscriptionItem({
     >
       <CardContent className="p-0">
         <div className="flex gap-1">
-          {/* Content */}
           <div className="flex-1 flex flex-col justify-between">
             <p className="text-xs leading-normal tracking-wide line-clamp-4">
               {text}
@@ -78,9 +78,7 @@ export function TranscriptionItem({
             </div>
           </div>
 
-          {/* Action Buttons - Right Side, Vertically Stacked */}
           <div className="flex flex-col justify-between gap-1">
-            {/* Hamburger Menu - Top */}
             <Button
               variant="ghost"
               size="sm"
@@ -90,8 +88,6 @@ export function TranscriptionItem({
             >
               <MoreHorizontalIcon className="h-2 w-2" />
             </Button>
-
-            {/* Pin Button - Bottom */}
             <Button
               variant="ghost"
               size="sm"

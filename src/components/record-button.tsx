@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  MicIcon,
-  MoreHorizontalIcon,
-  PauseIcon,
-  PodcastIcon,
-} from "lucide-react";
+import { MicIcon, MoreHorizontalIcon } from "lucide-react";
+
+type ElectronAPI = {
+  send?: (channel: string, data?: unknown) => void;
+  receive?: (channel: string, func: (...args: unknown[]) => void) => void;
+};
 
 interface RecordButtonProps {
   onAddToHistory?: (text: string) => void;
@@ -64,10 +64,8 @@ export function RecordButton({ onAddToHistory }: RecordButtonProps) {
       mediaRecorder.start();
       setIsRecording(true);
       isRecordingRef.current = true;
-      const api: any = (globalThis as any).electronAPI;
-      if (api && typeof api.send === "function") {
-        api.send("start-transcription");
-      }
+      const api = (globalThis as { electronAPI?: ElectronAPI }).electronAPI;
+      if (api?.send) api.send("start-transcription");
     } catch (err) {
       console.error("Error starting recording:", err);
     }
@@ -83,20 +81,16 @@ export function RecordButton({ onAddToHistory }: RecordButtonProps) {
       isRecordingRef.current = false;
       setIsProcessing(true);
       isProcessingRef.current = true;
-      const api: any = (globalThis as any).electronAPI;
-      if (api && typeof api.send === "function") {
-        api.send("stop-transcription");
-      }
+      const api = (globalThis as { electronAPI?: ElectronAPI }).electronAPI;
+      if (api?.send) api.send("stop-transcription");
     }
   };
 
   const transcribeAudio = async (audioBlob: Blob) => {
     try {
       setIsProcessing(true);
-      const api: any = (globalThis as any).electronAPI;
-      if (api && typeof api.send === "function") {
-        api.send("processing-started");
-      }
+      const api = (globalThis as { electronAPI?: ElectronAPI }).electronAPI;
+      if (api?.send) api.send("processing-started");
       const formData = new FormData();
       formData.append("audio", audioBlob, "recording.webm");
 
@@ -132,9 +126,8 @@ export function RecordButton({ onAddToHistory }: RecordButtonProps) {
   };
 
   useEffect(() => {
-    // Listen for Electron global shortcut toggle with fresh state via refs
-    const api: any = (globalThis as any).electronAPI;
-    if (api && typeof api.receive === "function") {
+    const api = (globalThis as { electronAPI?: ElectronAPI }).electronAPI;
+    if (api?.receive) {
       api.receive("toggle-recording", () => {
         if (isProcessingRef.current) return;
         if (isRecordingRef.current) {

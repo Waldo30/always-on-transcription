@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-
-// Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if API key is configured
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
         { error: "OpenAI API key not configured" },
@@ -26,19 +23,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert File to Buffer for OpenAI API
     const audioBuffer = Buffer.from(await audioFile.arrayBuffer());
 
-    // Create a File-like object that OpenAI expects
     const audioFileForOpenAI = new File([audioBuffer], "audio.webm", {
       type: audioFile.type,
     });
 
-    // Call OpenAI Whisper API
     const transcription = await openai.audio.transcriptions.create({
       file: audioFileForOpenAI,
       model: "whisper-1",
-      language: "en", // You can make this configurable later
+      language: "en",
       response_format: "text",
     });
 
@@ -48,8 +42,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Transcription error:", error);
-
-    // Handle specific OpenAI errors
     if (error instanceof Error) {
       if (error.message.includes("Invalid API key")) {
         return NextResponse.json(

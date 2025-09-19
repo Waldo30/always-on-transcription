@@ -100,7 +100,6 @@ function createWindow() {
 app.whenReady().then(() => {
   createWindow();
 
-  // Register global shortcut to toggle recording
   const registered = globalShortcut.register("CommandOrControl+Shift+R", () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send("toggle-recording");
@@ -111,7 +110,6 @@ app.whenReady().then(() => {
     console.error("Global shortcut registration failed");
   }
 
-  // Show indicator on renderer start/stop events
   ipcMain.on("start-transcription", () => {
     renderIndicator("recording");
   });
@@ -121,11 +119,9 @@ app.whenReady().then(() => {
   });
 
   ipcMain.on("stop-transcription", () => {
-    // Transition to processing immediately so there is no visual gap
     renderIndicator("processing");
   });
 
-  // Allow renderer to request a native clipboard write and confirm success
   ipcMain.on("copy-to-clipboard", (_evt, text: unknown) => {
     try {
       clipboard.writeText(String(text ?? ""));
@@ -139,9 +135,7 @@ app.whenReady().then(() => {
           indicatorWindow.hide();
         }
       }, 1500);
-    } catch {
-      // ignore
-    }
+    } catch {}
   });
 });
 
