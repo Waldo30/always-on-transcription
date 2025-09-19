@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { SettingsPanel } from "@/components/settings-panel";
 import { TranscriptionList } from "@/components/transcription-list";
@@ -35,14 +34,15 @@ const mockTranscriptions = [
 export default function Home() {
   const [status] = useState<"idle" | "recording" | "processing">("idle");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [lastTranscription] = useState("");
-  const [isCopied, setIsCopied] = useState(false);
+
   const [transcriptions, setTranscriptions] = useState(mockTranscriptions);
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 2000);
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      console.error("Clipboard copy failed:", error);
+    }
   };
 
   const handlePin = (id: string) => {
@@ -83,6 +83,7 @@ export default function Home() {
               type: "audio" as const,
             };
             setTranscriptions((prev) => [newTranscription, ...prev]);
+            handleCopy(text);
           }}
         />
 
