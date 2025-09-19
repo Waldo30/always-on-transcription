@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { logError } from "@/lib/log";
 
 type ElectronAPI = {
   send?: (channel: string, data?: unknown) => void;
@@ -61,7 +62,7 @@ export function useRecorder(onTranscription?: (text: string) => void) {
       const api = (globalThis as { electronAPI?: ElectronAPI }).electronAPI;
       if (api?.send) api.send("start-transcription");
     } catch (err) {
-      console.error("Error starting recording:", err);
+      logError("Error starting recording", err);
     }
   }, []);
 
@@ -103,7 +104,7 @@ export function useRecorder(onTranscription?: (text: string) => void) {
         onTranscription?.(text);
       }
     } catch (err) {
-      console.error("Transcription error:", err);
+      logError("Transcription error", err);
     } finally {
       setIsProcessing(false);
       isProcessingRef.current = false;
