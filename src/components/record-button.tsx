@@ -64,6 +64,10 @@ export function RecordButton({ onAddToHistory }: RecordButtonProps) {
       mediaRecorder.start();
       setIsRecording(true);
       isRecordingRef.current = true;
+      const api: any = (globalThis as any).electronAPI;
+      if (api && typeof api.send === "function") {
+        api.send("start-transcription");
+      }
     } catch (err) {
       console.error("Error starting recording:", err);
     }
@@ -79,12 +83,20 @@ export function RecordButton({ onAddToHistory }: RecordButtonProps) {
       isRecordingRef.current = false;
       setIsProcessing(true);
       isProcessingRef.current = true;
+      const api: any = (globalThis as any).electronAPI;
+      if (api && typeof api.send === "function") {
+        api.send("stop-transcription");
+      }
     }
   };
 
   const transcribeAudio = async (audioBlob: Blob) => {
     try {
       setIsProcessing(true);
+      const api: any = (globalThis as any).electronAPI;
+      if (api && typeof api.send === "function") {
+        api.send("processing-started");
+      }
       const formData = new FormData();
       formData.append("audio", audioBlob, "recording.webm");
 

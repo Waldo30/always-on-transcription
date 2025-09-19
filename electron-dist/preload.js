@@ -9,7 +9,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Example: Send message to main process
   send: (channel, data) => {
     // Whitelist channels for security
-    let validChannels = ['start-transcription', 'stop-transcription', 'get-settings'];
+    let validChannels = ['start-transcription', 'processing-started', 'stop-transcription', 'transcription-saved', 'copy-to-clipboard', 'get-settings'];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
     }

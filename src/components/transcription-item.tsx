@@ -41,11 +41,8 @@ export function TranscriptionItem({
   const handleCopy = async () => {
     try {
       const api: any = (globalThis as any).electronAPI;
-      if (api && typeof api.writeClipboard === "function") {
-        const ok = api.writeClipboard(text);
-        if (!ok) {
-          await navigator.clipboard.writeText(text);
-        }
+      if (api && typeof api.send === "function") {
+        api.send("copy-to-clipboard", text);
       } else {
         await navigator.clipboard.writeText(text);
       }

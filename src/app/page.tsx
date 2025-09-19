@@ -40,9 +40,9 @@ export default function Home() {
   const handleCopy = async (text: string) => {
     const api: any = (globalThis as any).electronAPI;
     try {
-      if (api && typeof api.writeClipboard === "function") {
-        const ok = api.writeClipboard(text);
-        if (ok) return;
+      if (api && typeof api.send === "function") {
+        api.send("copy-to-clipboard", text);
+        return;
       }
       await navigator.clipboard.writeText(text);
     } catch (error) {
