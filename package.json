@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "export": "next build && next export",
-    "electron:compile": "tsc --project tsconfig.electron.json && copy electron\\preload.js electron-dist\\preload.js",
+    "electron:compile": "tsc --project tsconfig.electron.json",
     "electron:dev": "npm run electron:compile && concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
     "electron:build": "npm run export && npm run electron:compile && electron-builder"
   },
