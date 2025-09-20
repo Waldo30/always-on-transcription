@@ -5,35 +5,13 @@ import { AppHeader } from "@/components/app-header";
 import { SettingsPanel } from "@/components/settings-panel";
 import { TranscriptionList } from "@/components/transcription-list";
 import { RecordButton } from "@/components/record-button";
-const mockTranscriptions = [
-  {
-    id: "1",
-    text: "This is a sample transcription that demonstrates how the clipboard history will look. It shows a longer text that gets truncated with ellipsis.",
-    timestamp: new Date(Date.now() - 5 * 60 * 1000),
-    isPinned: false,
-    type: "audio" as const,
-  },
-  {
-    id: "2",
-    text: "Short transcription",
-    timestamp: new Date(Date.now() - 15 * 60 * 1000),
-    isPinned: true,
-    type: "audio" as const,
-  },
-  {
-    id: "3",
-    text: "Another example of transcribed text that shows how the interface handles different lengths of content and various timestamps.",
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    isPinned: false,
-    type: "audio" as const,
-  },
-];
+import type { Status, Transcription } from "@/types/app";
 
 export default function Home() {
-  const [status] = useState<"idle" | "recording" | "processing">("idle");
+  const [status] = useState<Status>("idle");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const [transcriptions, setTranscriptions] = useState(mockTranscriptions);
+  const [transcriptions, setTranscriptions] = useState<Transcription[]>([]);
 
   const handleCopy = async (text: string) => {
     type ElectronAPI = { send?: (channel: string, data?: unknown) => void };

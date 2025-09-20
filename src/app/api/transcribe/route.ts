@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { logError } from "@/lib/log";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
       success: true,
     });
   } catch (error) {
-    console.error("Transcription error:", error);
+    logError("Transcription error (API)", error);
     if (error instanceof Error) {
       if (error.message.includes("Invalid API key")) {
         return NextResponse.json(
@@ -58,9 +59,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(
-      { error: "Transcription failed. Please try again." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Transcription failed. Please try again." }, { status: 500 });
   }
 }

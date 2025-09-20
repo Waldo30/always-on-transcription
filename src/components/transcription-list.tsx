@@ -4,17 +4,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { TranscriptionItem } from "@/components/transcription-item";
 import { MicIcon } from "lucide-react";
-
-interface TranscriptionItemData {
-  id: string;
-  text: string;
-  timestamp: Date;
-  isPinned: boolean;
-  type: "text" | "audio";
-}
+import type { Transcription } from "@/types/app";
 
 interface TranscriptionListProps {
-  items: TranscriptionItemData[];
+  items: Transcription[];
   onPin: (id: string) => void;
   onUnpin: (id: string) => void;
   onDelete: (id: string) => void;

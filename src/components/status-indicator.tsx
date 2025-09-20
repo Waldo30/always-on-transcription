@@ -1,7 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { MicIcon, MicOffIcon, LoaderIcon } from "lucide-react";
-
-type Status = "idle" | "recording" | "processing";
+import type { Status } from "@/types/app";
 
 interface StatusIndicatorProps {
   status: Status;

@@ -3,9 +3,10 @@
 import { SettingsIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusIndicator } from "@/components/status-indicator";
+import type { Status } from "@/types/app";
 
 interface AppHeaderProps {
-  status: "idle" | "recording" | "processing";
+  status: Status;
   onSettingsClick: () => void;
 }
 
