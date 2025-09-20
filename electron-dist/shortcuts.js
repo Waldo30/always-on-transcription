@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerToggleShortcut = registerToggleShortcut;
 exports.unregisterAllShortcuts = unregisterAllShortcuts;
-var electron_1 = require("electron");
+const electron_1 = require("electron");
 function registerToggleShortcut(getWindow) {
-    var registered = electron_1.globalShortcut.register("CommandOrControl+Shift+R", function () {
-        var win = getWindow();
+    const registered = electron_1.globalShortcut.register("CommandOrControl+Shift+R", () => {
+        const win = getWindow();
         if (win && !win.isDestroyed()) {
             win.webContents.send("toggle-recording");
         }

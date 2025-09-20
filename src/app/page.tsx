@@ -5,20 +5,13 @@ import { AppHeader } from "@/components/app-header";
 import { SettingsPanel } from "@/components/settings-panel";
 import { TranscriptionList } from "@/components/transcription-list";
 import { RecordButton } from "@/components/record-button";
+import type { Status, Transcription } from "@/types/app";
 
 export default function Home() {
-  const [status] = useState<"idle" | "recording" | "processing">("idle");
+  const [status] = useState<Status>("idle");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const [transcriptions, setTranscriptions] = useState<
-    {
-      id: string;
-      text: string;
-      timestamp: Date;
-      isPinned: boolean;
-      type: "audio";
-    }[]
-  >([]);
+  const [transcriptions, setTranscriptions] = useState<Transcription[]>([]);
 
   const handleCopy = async (text: string) => {
     type ElectronAPI = { send?: (channel: string, data?: unknown) => void };

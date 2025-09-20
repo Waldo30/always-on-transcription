@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PinIcon, MoreHorizontalIcon, ClockIcon } from "lucide-react";
 import { formatTimeAgo } from "@/lib/date";
+import type { Transcription } from "@/types/app";
 
-interface TranscriptionItemProps {
-  id: string;
-  text: string;
-  timestamp: Date;
-  isPinned: boolean;
-  type: "text" | "audio";
+interface TranscriptionItemProps
+  extends Pick<
+    Transcription,
+    "id" | "text" | "timestamp" | "isPinned" | "type"
+  > {
   onPin: (id: string) => void;
   onUnpin: (id: string) => void;
   onDelete: (id: string) => void;
